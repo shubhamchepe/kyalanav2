@@ -15,30 +15,29 @@
   --accent: #e53935;
 }
 html { scroll-behavior: smooth; }
-body { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; overflow-x:hidden;
-  background-image: repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,0,0,0.03) 39px,rgba(0,0,0,0.03) 40px),
-    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,0,0,0.02) 39px,rgba(0,0,0,0.02) 40px); }
+body {
+  font-family:'DM Sans',sans-serif;
+  background: #e8e0d5;
+  min-height:100vh;
+  overflow-x:hidden;
+  /* Lightweight grid lines — use box-shadow trick instead of repeating-gradient for perf */
+}
 
 /* ════════════════════════ HEADER ════════════════════════ */
 header { position:sticky; top:0; z-index:100; height:var(--header-h);
   background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 55%,#43a047 100%);
   box-shadow:0 3px 20px rgba(20,80,20,0.45);
-  display:flex; align-items:center; justify-content:space-between; padding:0 16px; gap:10px; }
+  display:flex; align-items:center; justify-content:space-between; padding:0 16px; gap:10px;
+  will-change: transform; /* sticky perf */ }
 
 .header-logo { display:flex; align-items:center; gap:8px; flex-shrink:0; min-width:0; }
 .logo-icon { font-size:1.5rem; flex-shrink:0; }
 .logo-text { display:flex; flex-direction:column; line-height:1.1; min-width:0; }
 .logo-name { font-family:'Playfair Display',serif; font-size:clamp(0.95rem,3.5vw,1.45rem); font-weight:900; color:white; white-space:nowrap; text-shadow:0 1px 6px rgba(0,0,0,0.22); overflow:hidden; text-overflow:ellipsis; }
 .logo-tag  { font-size:clamp(0.5rem,1.6vw,0.65rem); color:rgba(255,255,255,0.6); font-weight:300; letter-spacing:1.8px; text-transform:uppercase; white-space:nowrap; }
-.logo-img {
-  height: 130px;        /* controls logo height — adjust to taste */
-  width: auto;         /* keeps aspect ratio */
-  object-fit: contain;
-  display: block;
-}
+.logo-img { height:130px; width:auto; object-fit:contain; display:block; }
 .header-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
 
-/* User icon button */
 .user-btn { display:flex; align-items:center; justify-content:center; gap:5px;
   background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.38);
   border-radius:50px; color:white; font-family:'DM Sans',sans-serif; font-weight:600;
@@ -49,7 +48,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .user-name-short { display:none; }
 @media(min-width:400px){ .user-name-short { display:inline; } }
 
-/* Cart button */
 .cart-btn { display:flex; align-items:center; gap:6px;
   background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.38);
   border-radius:50px; color:white; font-family:'DM Sans',sans-serif; font-weight:600;
@@ -68,7 +66,7 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .ad-banner {
   margin:24px 14px 0; position:relative; border-radius:10px; overflow:hidden;
   box-shadow:0 4px 24px rgba(0,0,0,0.22),0 1px 6px rgba(0,0,0,0.14);
-  background:#111; pointer-events:none; /* VIEW ONLY — no click */
+  background:#111; pointer-events:none;
 }
 .ad-banner::before { content:''; position:absolute; inset:0; border-radius:10px;
   border:3px solid #d0d0d0; box-shadow:inset 0 0 0 1px #aaa,inset 0 2px 0 rgba(255,255,255,0.6);
@@ -85,101 +83,180 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.055) 2px,rgba(0,0,0,0.055) 4px); }
 
 /* ════════════════════════ RACK ════════════════════════ */
-.rack-section { margin:24px 14px 0; position:relative; }
+.rack-section { margin:24px 14px 0; position:relative; contain:style; /* layout removed — it clips standee overflow */ }
 .section-heading { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
 .section-heading .s-icon { font-size:1.3rem; }
 .section-heading h2 { font-family:'Playfair Display',serif; font-size:clamp(1rem,3vw,1.3rem); font-weight:700; color:var(--text); }
 .section-heading .s-line { flex:1; height:1.5px; background:linear-gradient(to right,rgba(0,0,0,0.1),transparent); border-radius:1px; }
-.rack-frame { background:linear-gradient(175deg,#8b1a0a 0%,#7a1208 50%,#5a0d06 100%); border-radius:12px; padding:10px 18px 14px;
-  box-shadow:0 18px 50px rgba(0,0,0,0.38),0 6px 18px rgba(100,10,5,0.22),inset 0 1px 0 rgba(255,120,80,0.12); position:relative; }
-.rack-frame::before { content:''; position:absolute; inset:0; border-radius:12px;
-  background-image:repeating-linear-gradient(45deg,transparent 0,transparent 3px,rgba(0,0,0,0.035) 3px,rgba(0,0,0,0.035) 4px); pointer-events:none; }
+
+/* ── RACK FRAME ────────────────────────────────────────────
+   The frame uses overflow:visible so 3D crates & standees
+   can poke outside its edges.
+   The background colour/image is painted by a ::before
+   pseudo that is position:absolute; inset:0 — it inherits
+   the same dimensions as the frame's layout box (which IS
+   the full 6-crate width × height) and stays clipped to
+   its own border-box without affecting overflow of siblings.
+────────────────────────────────────────────────────────── */
+.rack-frame {
+  border-radius: 12px;
+  padding: 32px 18px 14px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.38), 0 6px 18px rgba(0,0,0,0.18);
+}
+
+/* This pseudo IS the background — same size as the layout box */
+.rack-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  z-index: 0;
+  pointer-events: none;
+
+  /* ↓↓ CHANGE THIS URL TO YOUR IMAGE ↓↓ */
+  background-image: url('./91rDvAsJaAS._SL1500_.jpg');
+  /* ↑↑ ──────────────────────────────── ↑↑ */
+
+  background-color: #3d2b1a;   /* shows while image loads / if URL fails */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* All shelf/crate children sit above the background */
+.rack-frame > * { position: relative; z-index: 1; }
+
 .shelf { position:relative; margin-bottom:4px; }
 .shelf:last-child { margin-bottom:0; }
 .crate-row { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(6px,1.8vw,10px); position:relative; z-index:2; }
+
+/* Wooden shelf bar */
 .shelf-bar { height:11px; margin-top:3px; position:relative; z-index:1;
-  background:linear-gradient(to bottom,#f07050 0%,#cc3818 18%,#8b1a0a 55%,#5a0d06 100%);
-  border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,150,80,0.38),inset 0 -1px 0 rgba(0,0,0,0.28); }
-.shelf-bar::before,.shelf-bar::after { content:''; position:absolute; top:0; bottom:0; width:12px; background:linear-gradient(to bottom,#a82e10,#4a0c06); border-radius:4px; }
+  background:linear-gradient(to bottom,#c8954a 0%,#a0722a 30%,#7a5018 70%,#5c3a0e 100%);
+  border-radius:4px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,200,100,0.4),inset 0 -1px 0 rgba(0,0,0,0.3); }
+.shelf-bar::before,.shelf-bar::after { content:''; position:absolute; top:0; bottom:0; width:12px;
+  background:linear-gradient(to bottom,#a07830,#4a2c08); border-radius:4px; }
 .shelf-bar::before { left:-2px; } .shelf-bar::after { right:-2px; }
 
 /* ════════════════════════ CRATE CELL ════════════════════════ */
 .crate-cell { position:relative; }
 
-/* ── PRICE STANDEE — absolutely anchored to top-right of crate-outer ── */
+/* ══════════════════════════════════════════════════════════
+   PRICE STANDEE */
 .standee {
   position: absolute;
-  /* sits at top-right corner of the crate, slightly overlapping */
-  top: -14px;
-  right: -8px;
-  z-index: 30;
+  bottom: calc(100% + 5px);
+  right: -6px;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
   pointer-events: none;
   transform: rotate(3deg);
+  transform-origin: bottom center;
   filter: drop-shadow(0 2px 5px rgba(0,0,0,0.32));
 }
+
 .standee-card {
   background: white;
   border: 1.5px solid #e53935;
-  border-radius: 3px;
-  padding: 2px 4px 3px;
+  border-radius: 4px;
+  padding: 4px 6px 5px;
   text-align: center;
   position: relative;
-  width: clamp(34px,8vw,48px);
+  width: clamp(52px,12vw,72px);
   box-shadow: 0 2px 7px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 /* Red top strip */
-.standee-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#e53935,#ef5350); border-radius:2px 2px 0 0; }
-/* Discount badge — small circle top-left */
+.standee-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,#e53935,#ef5350); border-radius:3px 3px 0 0;
+}
+/* Discount badge */
 .standee-badge {
-  position: absolute; top: -6px; left: -6px;
-  width: clamp(13px,3.2vw,18px); height: clamp(13px,3.2vw,18px);
+  position: absolute; top: -7px; left: -7px;
+  width: clamp(16px,4vw,22px); height: clamp(16px,4vw,22px);
   background: radial-gradient(circle at 40% 35%, #ff8f00, #e65100);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: clamp(0.26rem,0.75vw,0.32rem);
+  font-size: clamp(0.32rem,1vw,0.42rem);
   font-weight: 800; color: white; line-height: 1.1; text-align: center;
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.5);
 }
-.standee-iname { font-size:clamp(0.28rem,0.8vw,0.36rem); font-weight:700; color:#111; text-transform:uppercase; letter-spacing:0.2px; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
-.standee-mrp   { font-size:clamp(0.24rem,0.72vw,0.31rem); color:#bbb; text-decoration:line-through; }
-.standee-price { font-family:'Playfair Display',serif; font-size:clamp(0.44rem,1.3vw,0.58rem); font-weight:900; color:#c62828; line-height:1; margin-top:1px; }
-.standee-unit  { font-size:clamp(0.22rem,0.65vw,0.28rem); color:#999; margin-top:0px; }
-/* Pole — thin & short */
-.standee-pole  { width:1.5px; height:7px; background:linear-gradient(to right,#bbb,#ddd,#bbb); }
-/* Base — small */
-.standee-base  { width:clamp(10px,3vw,16px); height:4px; background:linear-gradient(to bottom,#d0d0d0,#a8a8a8); border-radius:1px 1px 2px 2px; box-shadow:0 1px 3px rgba(0,0,0,0.18); }
+.standee-iname {
+  font-size: clamp(0.42rem,1.3vw,0.56rem);
+  font-weight: 700; color: #111; text-transform: uppercase;
+  letter-spacing: 0.2px; margin-top: 5px;
+  white-space: nowrap; overflow: visible;          /* never truncate */
+  max-width: none;
+}
+.standee-mrp   { font-size:clamp(0.36rem,1.1vw,0.46rem); color:#bbb; text-decoration:line-through; margin-top:1px; }
+.standee-price { font-family:'Playfair Display',serif; font-size:clamp(0.6rem,1.8vw,0.78rem); font-weight:900; color:#c62828; line-height:1; margin-top:2px; }
+.standee-unit  { font-size:clamp(0.32rem,0.95vw,0.42rem); color:#999; margin-top:1px; }
 
-/* ── CRATE ── */
-.crate-outer { perspective:1200px; perspective-origin:50% 75%; position:relative; overflow:visible; }
-.crate-wrap { position:relative; cursor:pointer; transform:rotateX(10deg); transform-origin:bottom center; transform-style:preserve-3d;
-  transition:transform 0.22s cubic-bezier(0.34,1.4,0.64,1),filter 0.18s; user-select:none; -webkit-tap-highlight-color:transparent;
-  filter:drop-shadow(0 7px 12px rgba(0,0,0,0.48)); margin-bottom:-6px; }
-.crate-wrap:hover { transform:rotateX(4deg) translateY(-5px); filter:drop-shadow(0 14px 20px rgba(0,0,0,0.52)) brightness(1.06); }
-.crate-wrap:active { transform:rotateX(12deg) scale(0.97); transition-duration:0.1s; }
-.crate-top { position:relative; overflow:hidden; aspect-ratio:4/2.3; border-radius:6px 6px 2px 2px; border:5px solid var(--cg-dark); background:var(--cg-dark); }
-.crate-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 35%; display:block; z-index:1; filter:saturate(1.18) brightness(1.06) contrast(1.03); transition:transform 0.3s ease; border-radius:2px; }
+/* Pole — thin wire stick planted on the crate rim corner */
+.standee-pole {
+  width: 2px;
+  height: 8px;
+  background: linear-gradient(to right, #aaa, #e0e0e0 45%, #c0c0c0 55%, #999);
+  box-shadow: 1px 0 2px rgba(0,0,0,0.2);
+  border-radius: 1px 1px 0 0;
+}
+
+/* ════════════════════════ CRATE ════════════════════════ */
+.crate-outer {
+  perspective:1200px;
+  perspective-origin:50% 75%;
+  position:relative;
+  overflow:visible;
+}
+.crate-wrap {
+  position:relative; cursor:pointer;
+  transform:rotateX(10deg); transform-origin:bottom center; transform-style:preserve-3d;
+  transition:transform 0.2s cubic-bezier(0.34,1.4,0.64,1);
+  user-select:none; -webkit-tap-highlight-color:transparent;
+  margin-bottom:-6px;
+  /* box-shadow is GPU-cheap vs drop-shadow filter */
+  filter:none;
+}
+/* Apply shadow on the crate-top instead — cheaper */
+.crate-top {
+  position:relative; overflow:visible; aspect-ratio:4/2.3;
+  border-radius:6px 6px 2px 2px; border:5px solid var(--cg-dark); background:var(--cg-dark);
+  box-shadow:0 8px 20px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.3);
+  transition:box-shadow 0.2s;
+}
+.crate-wrap:hover .crate-top { box-shadow:0 16px 32px rgba(0,0,0,0.55),0 4px 10px rgba(0,0,0,0.3); }
+.crate-wrap:hover { transform:rotateX(4deg) translateY(-5px); }
+.crate-wrap:active { transform:rotateX(12deg) scale(0.97); transition-duration:0.08s; }
+
+/* Inner clip mask */
+.crate-top-inner { position:absolute; inset:0; overflow:hidden; border-radius:2px; pointer-events:none; }
+.crate-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 35%; display:block; z-index:1; filter:saturate(1.15) brightness(1.04); transition:transform 0.25s ease; border-radius:2px; }
 .crate-wrap:hover .crate-img { transform:scale(1.05); }
-.crate-depth { position:absolute; bottom:0; left:0; right:0; height:44%; background:linear-gradient(to top,rgba(4,30,4,0.68),transparent); z-index:2; pointer-events:none; }
-.crate-vig { position:absolute; inset:0; z-index:3; pointer-events:none; background:radial-gradient(ellipse at 0% 0%,rgba(0,0,0,0.26) 0%,transparent 42%),radial-gradient(ellipse at 100% 0%,rgba(0,0,0,0.26) 0%,transparent 42%),radial-gradient(ellipse at 0% 100%,rgba(0,0,0,0.16) 0%,transparent 42%),radial-gradient(ellipse at 100% 100%,rgba(0,0,0,0.16) 0%,transparent 42%); }
+.crate-depth { position:absolute; bottom:0; left:0; right:0; height:44%; background:linear-gradient(to top,rgba(4,30,4,0.65),transparent); z-index:2; pointer-events:none; }
+/* Remove expensive 4x radial-gradient crate-vig — replace with single simpler vignette */
+.crate-vig { position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.18) 100%); }
 .crate-rim { position:absolute; inset:-5px; z-index:5; pointer-events:none; overflow:hidden; border-radius:7px 7px 3px 3px; }
-.crate-rim svg { display:block; width:100%; height:100%; }
-.crate-label { position:absolute; bottom:0; left:0; right:0; z-index:6; padding:4px 5px 3px; background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.42) 65%,transparent 100%); display:flex; flex-direction:column; align-items:center; }
-.crate-name  { font-size:clamp(0.52rem,1.8vw,0.66rem); font-weight:700; color:#fff; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,0.9); line-height:1.15; }
-.crate-price { font-size:clamp(0.46rem,1.5vw,0.57rem); color:#9fff9f; font-weight:500; margin-top:1px; text-shadow:0 1px 3px rgba(0,0,0,0.7); }
-.crate-front-wrap { position:absolute; left:-1px; right:-1px; bottom:-28px; height:28px; z-index:4; border-radius:0 0 5px 5px; overflow:hidden; box-shadow:0 5px 14px rgba(0,0,0,0.44); }
-.crate-front-img  { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center bottom; filter:saturate(1.2) brightness(0.85); z-index:1; }
+.crate-rim img,.crate-front-wall img,.crate-side img { display:block; width:100%; height:100%; pointer-events:none; }
+.crate-label { position:absolute; bottom:0; left:0; right:0; z-index:6; padding:4px 5px 3px; background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.38) 65%,transparent 100%); display:flex; flex-direction:column; align-items:center; }
+.crate-name  { font-size:clamp(0.52rem,1.8vw,0.66rem); font-weight:700; color:#fff; text-align:center; text-shadow:0 1px 3px rgba(0,0,0,0.9); line-height:1.15; }
+.crate-price { font-size:clamp(0.46rem,1.5vw,0.57rem); color:#9fff9f; font-weight:500; margin-top:1px; text-shadow:0 1px 2px rgba(0,0,0,0.7); }
+.crate-front-wrap { position:absolute; left:-1px; right:-1px; bottom:-28px; height:28px; z-index:4; border-radius:0 0 5px 5px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.4); }
+.crate-front-img  { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center bottom; filter:saturate(1.1) brightness(0.82); z-index:1; }
 .crate-front-wall { position:absolute; inset:0; z-index:2; }
-.crate-front-wall svg { display:block; width:100%; height:100%; }
-.crate-side { position:absolute; top:3px; bottom:-28px; right:-16px; width:16px; border-radius:0 4px 4px 0; overflow:hidden; z-index:4; border:2px solid #0c380c; border-left:none; box-shadow:4px 2px 10px rgba(0,0,0,0.38); }
-.crate-side svg { display:block; width:100%; height:100%; }
-.crate-shadow { position:absolute; bottom:-40px; left:4%; right:4%; height:10px; background:radial-gradient(ellipse,rgba(0,0,0,0.26) 0%,transparent 70%); filter:blur(4px); pointer-events:none; z-index:0; }
+.crate-side { position:absolute; top:3px; bottom:-28px; right:-16px; width:16px; border-radius:0 4px 4px 0; overflow:hidden; z-index:4; border:2px solid #0c380c; border-left:none; box-shadow:3px 2px 8px rgba(0,0,0,0.35); }
+/* Simpler shadow — no blur filter */
+.crate-shadow { position:absolute; bottom:-36px; left:8%; right:8%; height:8px;
+  background:rgba(0,0,0,0.22); border-radius:50%; pointer-events:none; z-index:0; }
 
 /* ════════════════════════ MODAL ════════════════════════ */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(10px); z-index:200; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.24s; }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.2s; }
 .modal-overlay.active { opacity:1; pointer-events:all; }
 .modal { background:var(--warm); border-radius:22px 22px 0 0; width:100%; max-width:500px; padding:22px 22px 40px; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1); box-shadow:0 -6px 40px rgba(0,0,0,0.22); }
 .modal-overlay.active .modal { transform:translateY(0); }
@@ -205,9 +282,9 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .add-btn:hover { opacity:0.9; } .add-btn:active { transform:scale(0.95); }
 
 /* ════════════════════════ CART DRAWER ════════════════════════ */
-.cart-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); z-index:300; display:flex; align-items:flex-start; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 0.22s; }
+.cart-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:300; display:flex; align-items:flex-start; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 0.2s; }
 .cart-drawer.active { opacity:1; pointer-events:all; }
-.cart-panel { background:var(--warm); width:min(360px,92vw); height:100%; overflow-y:auto; padding:22px 18px 36px; transform:translateX(100%); transition:transform 0.28s cubic-bezier(0.34,1.1,0.64,1); box-shadow:-6px 0 36px rgba(0,0,0,0.18); }
+.cart-panel { background:var(--warm); width:min(360px,92vw); height:100%; overflow-y:auto; padding:22px 18px 36px; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.25,1,0.5,1); box-shadow:-6px 0 36px rgba(0,0,0,0.18); will-change:transform; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
 .cart-drawer.active .cart-panel { transform:translateX(0); }
 .cart-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
 .cart-head h2 { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; }
@@ -227,27 +304,19 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .checkout-btn:hover { opacity:0.9; }
 
 /* ════════════════════════ USER PANEL ════════════════════════ */
-.user-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); z-index:300; display:flex; align-items:flex-start; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 0.22s; }
+.user-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:300; display:flex; align-items:flex-start; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 0.2s; }
 .user-drawer.active { opacity:1; pointer-events:all; }
-.user-panel { background:var(--warm); width:min(400px,95vw); height:100%; overflow-y:auto; transform:translateX(100%); transition:transform 0.28s cubic-bezier(0.34,1.1,0.64,1); box-shadow:-6px 0 36px rgba(0,0,0,0.18); display:flex; flex-direction:column; }
+.user-panel { background:var(--warm); width:min(400px,95vw); height:100%; overflow-y:auto; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.25,1,0.5,1); box-shadow:-6px 0 36px rgba(0,0,0,0.18); display:flex; flex-direction:column; will-change:transform; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
 .user-drawer.active .user-panel { transform:translateX(0); }
-
-/* Panel header */
 .up-header { background:linear-gradient(135deg,#1b5e20,#2e7d32); padding:24px 18px 20px; color:white; position:relative; flex-shrink:0; }
-.up-back { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.18); border:none; border-radius:50%; width:32px; height:32px; color:white; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
+.up-back { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.18); border:none; border-radius:50%; width:32px; height:32px; color:white; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.12s; }
 .up-back:hover { background:rgba(255,255,255,0.3); }
 .up-avatar { width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.22); border:3px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:10px; }
 .up-uname { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:700; }
 .up-email { font-size:0.78rem; opacity:0.72; margin-top:2px; }
-
-/* Sub-page navigation within panel */
-.up-body { flex:1; overflow-y:auto; }
-
-/* Views */
+.up-body { flex:1; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
 .up-view { display:none; padding:20px 18px; }
 .up-view.active { display:block; }
-
-/* Menu view */
 .up-menu { list-style:none; }
 .up-menu li { border-bottom:1px solid #f0f0f0; }
 .up-menu li:last-child { border-bottom:none; }
@@ -263,16 +332,12 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .mi-orange{ background:#fff3e0; }
 .mi-purple{ background:#f3e5f5; }
 .mi-red   { background:#fce4ec; }
-
-/* Sub-view back button */
 .sv-back { display:flex; align-items:center; gap:8px; background:none; border:none; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:600; color:var(--cg); cursor:pointer; padding:0 0 14px; }
 .sv-back:hover { text-decoration:underline; }
 .sv-title { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:16px; }
-
-/* Form styles */
 .fm-group { margin-bottom:14px; }
 .fm-group label { display:block; font-size:0.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px; }
-.fm-group input, .fm-group select, .fm-group textarea { width:100%; padding:10px 12px; border:1.5px solid #e0e0e0; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.9rem; color:var(--text); background:white; transition:border 0.15s; }
+.fm-group input, .fm-group select, .fm-group textarea { width:100%; padding:10px 12px; border:1.5px solid #e0e0e0; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.9rem; color:var(--text); background:white; transition:border-color 0.12s; -webkit-appearance:none; appearance:none; }
 .fm-group input:focus, .fm-group select:focus, .fm-group textarea:focus { outline:none; border-color:var(--cg); }
 .fm-group textarea { resize:vertical; min-height:70px; }
 .fm-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -280,20 +345,16 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .fm-btn:hover { opacity:0.9; }
 .fm-btn-outline { background:transparent; border:1.5px solid var(--cg); color:var(--cg); margin-top:8px; }
 .fm-btn-red { background:linear-gradient(135deg,#ef5350,#c62828); margin-top:8px; }
-
-/* Address cards */
 .addr-card { border:1.5px solid #e0e0e0; border-radius:10px; padding:12px 14px; margin-bottom:10px; position:relative; cursor:pointer; transition:border 0.15s; }
 .addr-card.selected { border-color:var(--cg); background:#f1f8f1; }
 .addr-card .ac-tag { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--cg); margin-bottom:4px; }
 .addr-card .ac-name { font-weight:600; font-size:0.88rem; }
 .addr-card .ac-addr { font-size:0.8rem; color:var(--muted); margin-top:2px; line-height:1.4; }
-.addr-actions { display:flex; gap:8px; margin-top:8px; }
+.addr-actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
 .addr-action-btn { font-size:0.72rem; font-weight:600; padding:4px 10px; border-radius:20px; border:1px solid; cursor:pointer; font-family:'DM Sans',sans-serif; background:transparent; }
 .addr-edit-btn { color:var(--cg); border-color:var(--cg); }
 .addr-del-btn  { color:var(--red); border-color:var(--red); }
 .default-badge { position:absolute; top:10px; right:10px; background:var(--cg); color:white; font-size:0.6rem; font-weight:700; padding:2px 7px; border-radius:20px; text-transform:uppercase; }
-
-/* Order cards */
 .order-card { border:1.5px solid #e8e8e8; border-radius:10px; padding:12px 14px; margin-bottom:10px; }
 .order-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
 .order-id   { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
@@ -309,8 +370,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .oab-reorder { color:var(--cg); border-color:var(--cg); }
 .oab-track   { color:#1565c0; border-color:#1565c0; }
 .oab-invoice { color:var(--muted); border-color:#ccc; }
-
-/* Payment cards */
 .pay-card { border:1.5px solid #e0e0e0; border-radius:10px; padding:12px 14px; margin-bottom:10px; display:flex; align-items:center; gap:12px; }
 .pay-icon { width:40px; height:28px; background:#f5f5f5; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; border:1px solid #e0e0e0; }
 .pay-info { flex:1; }
@@ -319,8 +378,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .pay-default-badge { font-size:0.6rem; font-weight:700; background:var(--cg); color:white; padding:2px 7px; border-radius:20px; text-transform:uppercase; }
 .pay-del-btn { background:none; border:none; color:#ddd; font-size:1rem; cursor:pointer; padding:4px; transition:color 0.12s; }
 .pay-del-btn:hover { color:var(--red); }
-
-/* Toggle / switch */
 .setting-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0f0f0; }
 .setting-row:last-child { border-bottom:none; }
 .setting-info .si-title { font-weight:600; font-size:0.9rem; }
@@ -331,40 +388,30 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 .toggle-track::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:white; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
 .toggle-sw input:checked + .toggle-track { background:var(--cg); }
 .toggle-sw input:checked + .toggle-track::before { transform:translateX(20px); }
-
-/* Logout */
 .logout-section { padding:16px 18px 30px; }
 .logout-btn { width:100%; padding:13px; background:linear-gradient(135deg,#ef5350,#c62828); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:opacity 0.15s; }
 .logout-btn:hover { opacity:0.9; }
-
-/* Toast */
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(70px); background:#1a1a1a; color:white; padding:11px 24px; border-radius:50px; font-size:0.84rem; font-weight:500; z-index:400; transition:transform 0.28s cubic-bezier(0.34,1.3,0.64,1),opacity 0.28s; opacity:0; white-space:nowrap; pointer-events:none; }
 .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
-
-/* Divider */
 .divider { height:1px; background:#f0f0f0; margin:10px 0; }
-
-/* Info banner */
 .info-chip { display:inline-flex; align-items:center; gap:5px; background:#e8f5e9; color:var(--cg-dark); border-radius:20px; padding:4px 10px; font-size:0.72rem; font-weight:600; margin-bottom:14px; }
 
 @media(max-width:480px){
   .rack-section,.ad-banner { margin-left:8px; margin-right:8px; }
-  .rack-frame { padding:8px 10px 10px; }
+  .rack-frame { padding:28px 10px 10px; }
   .crate-row  { gap:5px; }
   .crate-front-wrap { height:22px; bottom:-22px; }
   .crate-side { bottom:-22px; width:13px; right:-13px; }
   .crate-wrap { margin-bottom:-5px; }
-  .standee { top:-8px; right:-8px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══ HEADER ══ -->
 <header>
   <div class="header-logo">
-  <img src="logo.png" alt="Fresh Market" class="logo-img">
-</div>
+    <img src="logo.png" alt="Fresh Market" class="logo-img">
+  </div>
   <div class="header-actions">
     <button class="user-btn" onclick="openUser()">
       <span class="u-icon">👤</span>
@@ -379,7 +426,7 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 
 <div class="page" id="page"></div>
 
-<!-- ══ PRODUCT MODAL ══ -->
+<!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -406,7 +453,7 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   </div>
 </div>
 
-<!-- ══ CART DRAWER ══ -->
+<!-- CART DRAWER -->
 <div class="cart-drawer" id="cart-drawer" onclick="cartOverlayClick(event)">
   <div class="cart-panel">
     <div class="cart-head"><h2>Your Cart 🛒</h2><button class="close-btn" onclick="closeCart()">✕</button></div>
@@ -418,21 +465,16 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   </div>
 </div>
 
-<!-- ══ USER PANEL ══ -->
+<!-- USER PANEL -->
 <div class="user-drawer" id="user-drawer" onclick="userOverlayClick(event)">
   <div class="user-panel">
-
-    <!-- Header -->
     <div class="up-header">
       <button class="up-back" onclick="closeUser()">✕</button>
       <div class="up-avatar" id="up-avatar">👤</div>
       <div class="up-uname" id="up-uname">Guest User</div>
       <div class="up-email" id="up-email">Sign in to access your account</div>
     </div>
-
     <div class="up-body">
-
-      <!-- VIEW: MENU -->
       <div class="up-view active" id="view-menu">
         <ul class="up-menu">
           <li><button onclick="goView('view-profile')">
@@ -462,8 +504,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
           </button></li>
         </ul>
       </div>
-
-      <!-- VIEW: PROFILE -->
       <div class="up-view" id="view-profile">
         <button class="sv-back" onclick="goView('view-menu')">‹ Back</button>
         <div class="sv-title">My Profile</div>
@@ -479,8 +519,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
         <button class="fm-btn" onclick="saveProfile()">Save Changes</button>
         <button class="fm-btn fm-btn-outline" onclick="goView('view-change-password')">Change Password</button>
       </div>
-
-      <!-- VIEW: CHANGE PASSWORD -->
       <div class="up-view" id="view-change-password">
         <button class="sv-back" onclick="goView('view-profile')">‹ Back to Profile</button>
         <div class="sv-title">Change Password</div>
@@ -489,30 +527,22 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
         <div class="fm-group"><label>Confirm New Password</label><input type="password" id="pw-confirm" placeholder="Confirm new password"></div>
         <button class="fm-btn" onclick="changePassword()">Update Password</button>
       </div>
-
-      <!-- VIEW: ORDERS -->
       <div class="up-view" id="view-orders">
         <button class="sv-back" onclick="goView('view-menu')">‹ Back</button>
         <div class="sv-title">My Orders</div>
         <div id="orders-list"></div>
       </div>
-
-      <!-- VIEW: ORDER DETAIL -->
       <div class="up-view" id="view-order-detail">
         <button class="sv-back" onclick="goView('view-orders')">‹ Back to Orders</button>
         <div class="sv-title">Order Details</div>
         <div id="order-detail-content"></div>
       </div>
-
-      <!-- VIEW: ADDRESSES -->
       <div class="up-view" id="view-addresses">
         <button class="sv-back" onclick="goView('view-menu')">‹ Back</button>
         <div class="sv-title">Saved Addresses</div>
         <div id="addr-list"></div>
         <button class="fm-btn" onclick="goView('view-add-address')">+ Add New Address</button>
       </div>
-
-      <!-- VIEW: ADD / EDIT ADDRESS -->
       <div class="up-view" id="view-add-address">
         <button class="sv-back" onclick="goView('view-addresses')">‹ Back to Addresses</button>
         <div class="sv-title" id="addr-form-title">Add New Address</div>
@@ -536,16 +566,12 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
         </div>
         <button class="fm-btn" onclick="saveAddress()">Save Address</button>
       </div>
-
-      <!-- VIEW: PAYMENTS -->
       <div class="up-view" id="view-payments">
         <button class="sv-back" onclick="goView('view-menu')">‹ Back</button>
         <div class="sv-title">Payment Methods</div>
         <div id="pay-list"></div>
         <button class="fm-btn" style="margin-top:6px" onclick="goView('view-add-payment')">+ Add Payment Method</button>
       </div>
-
-      <!-- VIEW: ADD PAYMENT -->
       <div class="up-view" id="view-add-payment">
         <button class="sv-back" onclick="goView('view-payments')">‹ Back to Payments</button>
         <div class="sv-title">Add Payment Method</div>
@@ -574,8 +600,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
         </div>
         <button class="fm-btn" onclick="savePayment()">Save Payment Method</button>
       </div>
-
-      <!-- VIEW: SETTINGS -->
       <div class="up-view" id="view-settings">
         <button class="sv-back" onclick="goView('view-menu')">‹ Back</button>
         <div class="sv-title">Settings</div>
@@ -605,10 +629,7 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
         <div class="divider"></div>
         <button class="fm-btn fm-btn-red" onclick="deleteAccount()">Delete Account</button>
       </div>
-
-    </div><!-- end up-body -->
-
-    <!-- Logout -->
+    </div>
     <div class="logout-section">
       <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
     </div>
@@ -618,9 +639,6 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════
-   CATEGORIES DATA
-══════════════════════════════════════════════════════ */
 const categories = [
   { name:"Premium Fresh", icon:"🥦", items:[
     {name:"Okra",          price:40,  mrp:55,  unit:["kg"],         img:"https://images.unsplash.com/photo-1600318452058-44da5d22c21f?w=400&q=85&fit=crop"},
@@ -674,7 +692,6 @@ const categories = [
 let allItems = [];
 categories.forEach(c => c.items.forEach(i => allItems.push(i)));
 
-/* AD BANNERS — view only, no upload for end users */
 const adBanners = [
   {img:null, label:"Weekend Special — 30% off on Exotic Veggies!"},
   {img:null, label:"Fresh Arrivals Every Morning 🌅"},
@@ -683,9 +700,6 @@ const adBanners = [
   {img:null, label:"Festive Season Sale — Up to 40% off"},
 ];
 
-/* ══════════════════════════════════════════════════════
-   USER STATE
-══════════════════════════════════════════════════════ */
 let user = {
   name:'',email:'',phone:'',dob:'',gender:'',
   addresses:[
@@ -710,29 +724,32 @@ function makeRimSVG(){
   const W=140,H=102,T=6,tW=3.5,tH=2,tR=1,tP=8;
   const tN=Math.floor((W-6)/tP),tX0=(W-(tN*tP-(tP-tW)))/2;
   let top='',bot='';
-  for(let i=0;i<tN;i++){const x=tX0+i*tP,ty=(T-tH)/2,by=H-T+(T-tH)/2;top+=`<rect x="${x}" y="${ty}" width="${tW}" height="${tH}" rx="${tR}" fill="rgba(0,0,0,0.7)"/>`;bot+=`<rect x="${x}" y="${by}" width="${tW}" height="${tH}" rx="${tR}" fill="rgba(0,0,0,0.7)"/>"`;}
+  for(let i=0;i<tN;i++){const x=tX0+i*tP,ty=(T-tH)/2,by=H-T+(T-tH)/2;top+=`<rect x="${x}" y="${ty}" width="${tW}" height="${tH}" rx="${tR}" fill="rgba(0,0,0,0.7)"/>`;bot+=`<rect x="${x}" y="${by}" width="${tW}" height="${tH}" rx="${tR}" fill="rgba(0,0,0,0.7)"/>`;}
   const sW=2,sH=7,sR=1,sP=10,sN=Math.floor((H-T*2-4)/sP),sY0=T+(H-T*2-(sN*sP-(sP-sH)))/2;
   let sides='';
   for(let i=0;i<sN;i++){const y=sY0+i*sP,lx=(T-sW)/2,rx=W-T+(T-sW)/2;sides+=`<rect x="${lx}" y="${y}" width="${sW}" height="${sH}" rx="${sR}" fill="rgba(0,0,0,0.7)"/><rect x="${rx}" y="${y}" width="${sW}" height="${sH}" rx="${sR}" fill="rgba(0,0,0,0.7)"/>`;}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a9040"/><stop offset="100%" stop-color="#1b5e20"/></linearGradient><mask id="rm"><rect width="${W}" height="${H}" fill="white"/><rect x="${T}" y="${T}" width="${W-T*2}" height="${H-T*2}" fill="black"/></mask></defs><rect width="${W}" height="${H}" fill="url(#rg)" mask="url(#rm)"/>${top}${bot}${sides}<rect width="${W}" height="1.2" fill="rgba(255,255,255,0.32)" mask="url(#rm)"/></svg>`;
 }
+
 function makeFrontSVG(){
   const W=200,H=28,pW=3,pH=20,pR=1.5,pitch=9,N=Math.floor((W-4)/pitch),x0=(W-(N*pitch-(pitch-pW)))/2,y=(H-pH)/2;
   let m=`<rect width="${W}" height="${H}" fill="white"/>`;
   for(let i=0;i<N;i++)m+=`<rect x="${x0+i*pitch}" y="${y}" width="${pW}" height="${pH}" rx="${pR}" fill="black"/>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#348a3a" stop-opacity="0.95"/><stop offset="45%" stop-color="#2a7a2e" stop-opacity="0.97"/><stop offset="100%" stop-color="#1b5e20" stop-opacity="1"/></linearGradient><mask id="sm">${m}</mask></defs><rect width="${W}" height="${H}" fill="url(#fg)" mask="url(#sm)"/><rect width="${W}" height="1.2" fill="rgba(255,255,255,0.22)" mask="url(#sm)"/><rect y="${H-2}" width="${W}" height="2" fill="rgba(0,0,0,0.25)" mask="url(#sm)"/>${Array.from({length:N},(_,i)=>`<rect x="${x0+i*pitch-0.5}" y="${y}" width="1" height="${pH}" rx="0.5" fill="rgba(80,200,80,0.35)"/>`).join('')}</svg>`;
 }
+
 function makeSideSVG(){
   const W=16,H=110,pW=3.5,pH=11,pR=1.75,pitch=15,N=Math.floor((H-6)/pitch),y0=(H-(N*pitch-(pitch-pH)))/2,x=(W-pW)/2;
   let m=`<rect width="${W}" height="${H}" fill="white"/>`;
   for(let i=0;i<N;i++)m+=`<rect x="${x}" y="${y0+i*pitch}" width="${pW}" height="${pH}" rx="${pR}" fill="black"/>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#1b5e20"/><stop offset="55%" stop-color="#267028"/><stop offset="100%" stop-color="#1b5e20"/></linearGradient><mask id="ssm">${m}</mask></defs><rect width="${W}" height="${H}" fill="url(#sg)" mask="url(#ssm)"/><rect width="1.2" height="${H}" fill="rgba(255,255,255,0.12)" mask="url(#ssm)"/></svg>`;
 }
-const RIM=makeRimSVG(), FRONT=makeFrontSVG(), SIDE=makeSideSVG();
 
-/* ══════════════════════════════════════════════════════
-   BUILD PAGE
-══════════════════════════════════════════════════════ */
+const RIM_SVG=makeRimSVG(), FRONT_SVG=makeFrontSVG(), SIDE_SVG=makeSideSVG();
+// Use data URLs so SVGs are parsed once by the img decoder, not as 108x inline DOM trees
+function svgUrl(s){ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s); }
+const RIM_URL=svgUrl(RIM_SVG), FRONT_URL=svgUrl(FRONT_SVG), SIDE_URL=svgUrl(SIDE_SVG);
+
 function standeeHTML(item){
   const disc=Math.round((1-item.price/item.mrp)*100);
   return `<div class="standee">
@@ -744,7 +761,6 @@ function standeeHTML(item){
       <div class="standee-unit">/${item.unit[0]}</div>
     </div>
     <div class="standee-pole"></div>
-    <div class="standee-base"></div>
   </div>`;
 }
 
@@ -755,15 +771,24 @@ function adHTML(ad){
   </div>`;
 }
 
+/* ══════════════════════════════════════════════════════
+   BUILD PAGE
+══════════════════════════════════════════════════════ */
 function buildPage(){
   const page=document.getElementById('page');
+  const frag=document.createDocumentFragment(); // batch insert — avoids per-section reflow
   let adIdx=0;
   categories.forEach((cat,ci)=>{
-    if(ci>0&&adIdx<adBanners.length){page.insertAdjacentHTML('beforeend',adHTML(adBanners[adIdx++]));}
+    if(ci>0&&adIdx<adBanners.length){
+      const adEl=document.createElement('div');
+      adEl.innerHTML=adHTML(adBanners[adIdx++]);
+      frag.appendChild(adEl.firstElementChild);
+    }
     const shelves=[];
     for(let i=0;i<cat.items.length;i+=3)shelves.push(cat.items.slice(i,i+3));
     const sec=document.createElement('div');
     sec.className='rack-section';
+    // Note: content-visibility:auto was removed — it clips overflow and hides top-row standees
     sec.innerHTML=`
       <div class="section-heading"><span class="s-icon">${cat.icon}</span><h2>${cat.name}</h2><div class="s-line"></div></div>
       <div class="rack-frame">
@@ -776,15 +801,17 @@ function buildPage(){
                   <div class="crate-outer">
                     <div class="crate-wrap" onclick="openModal(${gi})">
                       <div class="crate-top">
-                        <img class="crate-img" src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.style.opacity='0.4'">
-                        <div class="crate-depth"></div><div class="crate-vig"></div>
-                        <div class="crate-rim">${RIM}</div>
+                        <div class="crate-top-inner">
+                          <img class="crate-img" src="${item.img}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.style.opacity='0.4'">
+                          <div class="crate-depth"></div><div class="crate-vig"></div>
+                        </div>
+                        <div class="crate-rim"><img src="${RIM_URL}" alt="" style="display:block;width:100%;height:100%"></div>
                         <div class="crate-label"><div class="crate-name">${item.name}</div><div class="crate-price">₹${item.price}/${item.unit[0]}</div></div>
+                        ${standeeHTML(item)}
                       </div>
-                      <div class="crate-front-wrap"><img class="crate-front-img" src="${item.img}" alt="" loading="lazy"><div class="crate-front-wall">${FRONT}</div></div>
-                      <div class="crate-side">${SIDE}</div>
+                      <div class="crate-front-wrap"><img class="crate-front-img" src="${item.img}" alt="" loading="lazy" decoding="async"><div class="crate-front-wall"><img src="${FRONT_URL}" alt="" style="display:block;width:100%;height:100%"></div></div>
+                      <div class="crate-side"><img src="${SIDE_URL}" alt="" style="display:block;width:100%;height:100%"></div>
                     </div>
-                    ${standeeHTML(item)}
                     <div class="crate-shadow"></div>
                   </div>
                 </div>`;
@@ -793,8 +820,9 @@ function buildPage(){
             <div class="shelf-bar"></div>
           </div>`).join('')}
       </div>`;
-    page.appendChild(sec);
+    frag.appendChild(sec);
   });
+  page.appendChild(frag); // single DOM insertion for the entire page
 }
 
 /* ══════════════════════════════════════════════════════
@@ -823,9 +851,7 @@ function closeModal(){document.getElementById('modal-overlay').classList.remove(
 function addToCart(){const ex=cart.find(c=>c.name===curItem.name&&c.unit===curUnit);if(ex)ex.qty=parseFloat((ex.qty+curQty).toFixed(1));else cart.push({name:curItem.name,img:curItem.img,price:curItem.price,qty:curQty,unit:curUnit});updCount();closeModal();showToast(`${curItem.name} added!`);}
 function updCount(){document.getElementById('cart-count').textContent=cart.length;}
 
-/* ══════════════════════════════════════════════════════
-   CART
-══════════════════════════════════════════════════════ */
+/* CART */
 function openCart(){renderCart();document.getElementById('cart-drawer').classList.add('active');document.body.style.overflow='hidden';}
 function closeCart(){document.getElementById('cart-drawer').classList.remove('active');document.body.style.overflow='';}
 function cartOverlayClick(e){if(e.target===document.getElementById('cart-drawer'))closeCart();}
@@ -841,19 +867,14 @@ function handleCheckout(){
   if(!user.addresses.length){showToast('Please add a delivery address first');closeCart();openUser();goView('view-addresses');return;}
   showToast('Order placed! 🎉');cart=[];updCount();renderCart();closeCart();}
 
-/* ══════════════════════════════════════════════════════
-   USER PANEL
-══════════════════════════════════════════════════════ */
+/* USER PANEL */
 function openUser(){
-  syncUserHeader();
-  renderOrders();renderAddresses();renderPayments();
-  // pre-fill profile fields
+  syncUserHeader();renderOrders();renderAddresses();renderPayments();
   document.getElementById('pf-name').value=user.name;
   document.getElementById('pf-email').value=user.email;
   document.getElementById('pf-phone').value=user.phone;
   document.getElementById('pf-dob').value=user.dob;
   document.getElementById('pf-gender').value=user.gender;
-  // sync settings toggles
   document.getElementById('s-order').checked=user.settings.orderUpdates;
   document.getElementById('s-promo').checked=user.settings.promo;
   document.getElementById('s-email').checked=user.settings.email;
@@ -864,7 +885,6 @@ function openUser(){
 }
 function closeUser(){document.getElementById('user-drawer').classList.remove('active');document.body.style.overflow='';}
 function userOverlayClick(e){if(e.target===document.getElementById('user-drawer'))closeUser();}
-
 function syncUserHeader(){
   const n=user.name||'Guest User';
   document.getElementById('up-uname').textContent=n;
@@ -874,13 +894,10 @@ function syncUserHeader(){
   av.textContent=user.name?user.name[0].toUpperCase():'👤';
   av.style.background=user.name?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.22)';
 }
-
 function goView(id){
   document.querySelectorAll('.up-view').forEach(v=>v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-/* PROFILE */
 function saveProfile(){
   user.name=document.getElementById('pf-name').value.trim();
   user.email=document.getElementById('pf-email').value.trim();
@@ -889,8 +906,6 @@ function saveProfile(){
   user.gender=document.getElementById('pf-gender').value;
   syncUserHeader();showToast('Profile saved ✓');goView('view-menu');
 }
-
-/* CHANGE PASSWORD */
 function changePassword(){
   const cur=document.getElementById('pw-current').value;
   const nw=document.getElementById('pw-new').value;
@@ -898,13 +913,9 @@ function changePassword(){
   if(!cur){showToast('Enter current password');return;}
   if(nw.length<8){showToast('New password must be 8+ characters');return;}
   if(nw!==cf){showToast('Passwords do not match');return;}
-  document.getElementById('pw-current').value='';
-  document.getElementById('pw-new').value='';
-  document.getElementById('pw-confirm').value='';
+  document.getElementById('pw-current').value='';document.getElementById('pw-new').value='';document.getElementById('pw-confirm').value='';
   showToast('Password updated ✓');goView('view-profile');
 }
-
-/* ORDERS */
 function renderOrders(){
   const el=document.getElementById('orders-list');
   if(!user.orders.length){el.innerHTML=`<div style="text-align:center;padding:40px 0;color:#bbb;"><span style="font-size:2.5rem;display:block;margin-bottom:8px">📦</span>No orders yet</div>`;return;}
@@ -949,8 +960,6 @@ function viewOrderDetail(i){
 }
 function reorder(i){const o=user.orders[i];showToast(`${o.items.length} items added to cart!`);closeUser();}
 function trackOrder(i){showToast('Live tracking coming soon 📍');}
-
-/* ADDRESSES */
 function renderAddresses(){
   const el=document.getElementById('addr-list');
   if(!user.addresses.length){el.innerHTML=`<div style="text-align:center;padding:30px 0;color:#bbb;">No saved addresses</div>`;return;}
@@ -962,7 +971,7 @@ function renderAddresses(){
       <div class="ac-addr">${a.line1}, ${a.line2}<br>${a.city}, ${a.state} - ${a.pin}${a.landmark?`<br>Near: ${a.landmark}`:''}</div>
       <div class="addr-actions">
         <button class="addr-action-btn addr-edit-btn" onclick="editAddress(${i})">Edit</button>
-        <button class="addr-action-btn addr-del-btn"  onclick="deleteAddress(${i})">Delete</button>
+        <button class="addr-action-btn addr-del-btn" onclick="deleteAddress(${i})">Delete</button>
         ${!a.isDefault?`<button class="addr-action-btn" style="color:#555;border-color:#ccc" onclick="setDefaultAddr(${i})">Set Default</button>`:''}
       </div>
     </div>`).join('');
@@ -998,7 +1007,6 @@ function saveAddress(){
   };
   if(!a.name||!a.line1||!a.city||!a.pin){showToast('Please fill all required fields');return;}
   if(idx>=0)user.addresses[idx]=a; else user.addresses.push(a);
-  // reset form
   document.getElementById('addr-form-title').textContent='Add New Address';
   document.getElementById('addr-edit-idx').value='-1';
   ['af-type','af-name','af-phone','af-line1','af-line2','af-city','af-state','af-pin','af-landmark'].forEach(id=>{const el=document.getElementById(id);if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
@@ -1006,8 +1014,6 @@ function saveAddress(){
 }
 function deleteAddress(i){if(user.addresses.length===1&&user.addresses[0].isDefault){showToast('Cannot delete your only address');return;}user.addresses.splice(i,1);renderAddresses();showToast('Address removed');}
 function setDefaultAddr(i){user.addresses.forEach((a,j)=>a.isDefault=(j===i));renderAddresses();showToast('Default address updated ✓');}
-
-/* PAYMENTS */
 function renderPayments(){
   const el=document.getElementById('pay-list');
   if(!user.payments.length){el.innerHTML=`<div style="text-align:center;padding:30px 0;color:#bbb;">No payment methods saved</div>`;return;}
@@ -1053,14 +1059,10 @@ function savePayment(){
   renderPayments();showToast('Payment method saved ✓');goView('view-payments');
 }
 function deletePayment(i){user.payments.splice(i,1);renderPayments();showToast('Payment method removed');}
-
-/* SETTINGS */
 function toggleDark(cb){
   document.body.style.filter=cb.checked?'invert(1) hue-rotate(180deg)':'';
   user.settings.dark=cb.checked;
 }
-
-/* ACCOUNT */
 function deleteAccount(){
   if(confirm('Are you sure you want to delete your account? This cannot be undone.')){
     user={name:'',email:'',phone:'',dob:'',gender:'',addresses:[],payments:[],orders:[],settings:{orderUpdates:true,promo:false,email:true,dark:false}};
@@ -1068,8 +1070,6 @@ function deleteAccount(){
   }
 }
 function doLogout(){user.name='';user.email='';syncUserHeader();closeUser();showToast('Logged out. See you soon! 👋');}
-
-/* TOAST */
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 buildPage();
