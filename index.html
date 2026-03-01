@@ -116,7 +116,7 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   pointer-events: none;
 
   /* ↓↓ CHANGE THIS URL TO YOUR IMAGE ↓↓ */
-  background-image: url('./91rDvAsJaAS._SL1500_.jpg');
+  background-image: url('YOUR_IMAGE_URL_HERE');
   /* ↑↑ ──────────────────────────────── ↑↑ */
 
   background-color: #3d2b1a;   /* shows while image loads / if URL fails */
@@ -141,11 +141,11 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   background:linear-gradient(to bottom,#a07830,#4a2c08); border-radius:4px; }
 .shelf-bar::before { left:-2px; } .shelf-bar::after { right:-2px; }
 
-/* ════════════════════════ CRATE CELL ════════════════════════ */
-.crate-cell { position:relative; }
-
 /* ══════════════════════════════════════════════════════════
-   PRICE STANDEE */
+   PRICE STANDEE — fully responsive, text always contained
+══════════════════════════════════════════════════════════ */
+.crate-cell { position:relative; container-type:inline-size; }
+
 .standee {
   position: absolute;
   bottom: calc(100% + 5px);
@@ -157,51 +157,76 @@ header { position:sticky; top:0; z-index:100; height:var(--header-h);
   pointer-events: none;
   transform: rotate(3deg);
   transform-origin: bottom center;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.32));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
 }
 
 .standee-card {
   background: white;
   border: 1.5px solid #e53935;
-  border-radius: 4px;
-  padding: 4px 6px 5px;
+  border-radius: 3px;
+  padding: 3px 5px 4px;
   text-align: center;
   position: relative;
-  width: clamp(52px,12vw,72px);
-  box-shadow: 0 2px 7px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
+  width: 52cqi;          /* narrower card */
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
 }
-/* Red top strip */
 .standee-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:4px;
-  background:linear-gradient(90deg,#e53935,#ef5350); border-radius:3px 3px 0 0;
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,#e53935,#ef5350); border-radius:2px 2px 0 0;
 }
-/* Discount badge */
+
+/* Badge sits on .standee (NOT inside .standee-card) so overflow:hidden doesn't clip it */
 .standee-badge {
-  position: absolute; top: -7px; left: -7px;
-  width: clamp(16px,4vw,22px); height: clamp(16px,4vw,22px);
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 17cqi; height: 17cqi;
+  min-width: 15px; min-height: 15px; max-width: 21px; max-height: 21px;
   background: radial-gradient(circle at 40% 35%, #ff8f00, #e65100);
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: clamp(0.32rem,1vw,0.42rem);
-  font-weight: 800; color: white; line-height: 1.1; text-align: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.5);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  /* Font scales as fraction of the badge's own size — always fits inside */
+  font-size: 4cqi;
+  line-height: 1;
+  font-weight: 800; color: white; text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.4);
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;        /* hard clip — text can never escape the circle */
+  padding: 1px;
 }
-.standee-iname {
-  font-size: clamp(0.42rem,1.3vw,0.56rem);
-  font-weight: 700; color: #111; text-transform: uppercase;
-  letter-spacing: 0.2px; margin-top: 5px;
-  white-space: nowrap; overflow: visible;          /* never truncate */
-  max-width: none;
-}
-.standee-mrp   { font-size:clamp(0.36rem,1.1vw,0.46rem); color:#bbb; text-decoration:line-through; margin-top:1px; }
-.standee-price { font-family:'Playfair Display',serif; font-size:clamp(0.6rem,1.8vw,0.78rem); font-weight:900; color:#c62828; line-height:1; margin-top:2px; }
-.standee-unit  { font-size:clamp(0.32rem,0.95vw,0.42rem); color:#999; margin-top:1px; }
 
-/* Pole — thin wire stick planted on the crate rim corner */
+.standee-iname {
+  font-size: 5.5cqi;
+  font-weight: 700; color: #111; text-transform: uppercase;
+  letter-spacing: 0px; margin-top: 4px; line-height: 1.2;
+  /* Wrap to 2 lines if needed — never overflow */
+  white-space: normal;
+  word-break: break-word;
+  overflow: hidden;
+}
+.standee-mrp {
+  font-size: 4.5cqi;
+  color: #bbb; text-decoration: line-through; margin-top: 1px;
+  white-space: nowrap; overflow: hidden;
+}
+.standee-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 7.5cqi;
+  font-weight: 900; color: #c62828; line-height: 1; margin-top: 1px;
+  white-space: nowrap; overflow: hidden;
+}
+.standee-unit {
+  font-size: 4cqi;
+  color: #999; margin-top: 0px;
+  white-space: nowrap; overflow: hidden;
+}
+
 .standee-pole {
   width: 2px;
-  height: 8px;
+  height: 7px;
   background: linear-gradient(to right, #aaa, #e0e0e0 45%, #c0c0c0 55%, #999);
   box-shadow: 1px 0 2px rgba(0,0,0,0.2);
   border-radius: 1px 1px 0 0;
@@ -753,8 +778,8 @@ const RIM_URL=svgUrl(RIM_SVG), FRONT_URL=svgUrl(FRONT_SVG), SIDE_URL=svgUrl(SIDE
 function standeeHTML(item){
   const disc=Math.round((1-item.price/item.mrp)*100);
   return `<div class="standee">
+    ${disc>0?`<div class="standee-badge"><span>${disc}%</span><span>OFF</span></div>`:''}
     <div class="standee-card">
-      ${disc>0?`<div class="standee-badge">${disc}%<br>OFF</div>`:''}
       <div class="standee-iname">${item.name}</div>
       ${item.mrp>item.price?`<div class="standee-mrp">₹${item.mrp}</div>`:''}
       <div class="standee-price">₹${item.price}</div>
