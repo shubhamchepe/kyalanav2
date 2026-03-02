@@ -30,18 +30,15 @@ const ALL_CACHES = [SHELL_CACHE, IMAGES_CACHE, FONTS_CACHE];
 // These are the minimum files needed to render the app offline.
 // Adjust this list to match your actual file structure.
 const APP_SHELL_URLS = [
-  '/index.html',
-  '/manifest.json',
-  '/sw.js',
-  // PWA install helper
-  '/pwa-install.js',
-  // Back-button fix (if you use it)
-  '/back_button_fix.js',
-  // Icons
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  // Offline fallback page
-  '/offline.html',
+  '/kyalanav2/index.html',
+  '/kyalanav2/manifest.json',
+  '/kyalanav2/sw.js',
+  '/kyalanav2/offline.html',
+  '/kyalanav2/pwa-install.js',
+  '/kyalanav2/api-client.js',
+  '/kyalanav2/frontend-api.js',
+  '/kyalanav2/icons/icon-192x192.png',
+  '/kyalanav2/icons/icon-512x512.png',
 ];
 
 // ── Image hosts that use the images cache ───────────────────────
