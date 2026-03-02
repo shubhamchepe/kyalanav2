@@ -20,8 +20,8 @@
   /* ───────────────────────────────────────────────────────────
      CONFIG — adjust these to match your app
   ─────────────────────────────────────────────────────────── */
-  const SW_PATH        = '/sw.js';         // Path to your service worker
-  const SW_SCOPE       = '/';              // Scope of the service worker
+  const SW_PATH  = 'sw.js';           // relative path
+const SW_SCOPE = '/kyalanav2/';             // Scope of the service worker
   const UPDATE_INTERVAL = 60 * 60 * 1000; // Check for SW updates every 1 hour
 
 
