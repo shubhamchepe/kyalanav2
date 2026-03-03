@@ -1013,8 +1013,8 @@ let products = [
 ];
 
 let orders = [
-  {id:'ORD-001',customerId:'cu1',date:'2026-03-01',status:'pending',slot:'Express',items:[{name:'Tomatoes',qty:2,unit:'kg',price:30},{name:'Spinach',qty:0.5,unit:'kg',price:25}],addr:'Flat 204, Sunrise Apts, Baner, Pune',lat:21.066430,lng:79.060624,deliveryFee:29,packFee:10},
-  {id:'ORD-002',customerId:'cu2',date:'2026-03-01',status:'processing',slot:'Express',items:[{name:'Avocado',qty:2,unit:'piece',price:80},{name:'Broccoli',qty:1,unit:'kg',price:70}],addr:'B-12 Kalyani Nagar, Pune',lat:21.0671933,lng:79.060640878,deliveryFee:29,packFee:10},
+  {id:'ORD-001',customerId:'cu1',date:'2026-03-01',status:'pending',slot:'Express',items:[{name:'Tomatoes',qty:2,unit:'kg',price:30},{name:'Spinach',qty:0.5,unit:'kg',price:25}],addr:'Flat 204, Sunrise Apts, Baner, Pune',lat:18.5590,lng:73.7868,deliveryFee:29,packFee:10},
+  {id:'ORD-002',customerId:'cu2',date:'2026-03-01',status:'processing',slot:'Express',items:[{name:'Avocado',qty:2,unit:'piece',price:80},{name:'Broccoli',qty:1,unit:'kg',price:70}],addr:'B-12 Kalyani Nagar, Pune',lat:18.5457,lng:73.9046,deliveryFee:29,packFee:10},
   {id:'ORD-003',customerId:'cu3',date:'2026-03-01',status:'pending',slot:'Today Evening',items:[{name:'Onion',qty:3,unit:'kg',price:22},{name:'Carrots',qty:1,unit:'kg',price:28},{name:'Garlic',qty:0.5,unit:'kg',price:60}],addr:'103 Koregaon Park, Pune',lat:18.5362,lng:73.8940,deliveryFee:15,packFee:10},
   {id:'ORD-004',customerId:'cu4',date:'2026-03-01',status:'delivered',slot:'Tomorrow Morning',items:[{name:'Sweet Corn',qty:4,unit:'piece',price:20},{name:'Kale',qty:1,unit:'bunch',price:55}],addr:'Plot 7 Wakad, Pune',lat:18.5989,lng:73.7746,deliveryFee:0,packFee:10},
   {id:'ORD-005',customerId:'cu1',date:'2026-02-29',status:'delivered',slot:'Express',items:[{name:'Red Berries',qty:0.5,unit:'kg',price:120},{name:'Green Grapes',qty:1,unit:'kg',price:90}],addr:'Flat 204, Sunrise Apts, Baner, Pune',lat:18.5590,lng:73.7868,deliveryFee:29,packFee:10},
@@ -1024,8 +1024,8 @@ let orders = [
 ];
 
 let customers = [
-  {id:'cu1',name:'Ajinkya Gorle',email:'ajinkya@email.com',phone:'8766443509',addr:'Flat 204, Sunrise Apts, Baner',lat:21.066430,lng:79.060624,orders:3,totalSpent:845,joinDate:'2024-09-12',notes:'Prefers organic, no bitter gourd',status:'active'},
-  {id:'cu2',name:'Shubham Chepe',email:'shubhamc@email.com',phone:'9665811415',addr:'B-12 Kalyani Nagar, Pune',lat:21.0671933,lng:79.060640878,orders:2,totalSpent:580,joinDate:'2024-10-22',notes:'',status:'active'},
+  {id:'cu1',name:'Rahul Sharma',email:'rahul@email.com',phone:'9876543210',addr:'Flat 204, Sunrise Apts, Baner',lat:18.5590,lng:73.7868,orders:3,totalSpent:845,joinDate:'2024-09-12',notes:'Prefers organic, no bitter gourd',status:'active'},
+  {id:'cu2',name:'Priya Patel',email:'priya@email.com',phone:'9123456789',addr:'B-12 Kalyani Nagar, Pune',lat:18.5457,lng:73.9046,orders:2,totalSpent:580,joinDate:'2024-10-22',notes:'',status:'active'},
   {id:'cu3',name:'Arjun Mehta',email:'arjun@email.com',phone:'9988776655',addr:'103 Koregaon Park, Pune',lat:18.5362,lng:73.8940,orders:1,totalSpent:212,joinDate:'2025-01-08',notes:'Bulk buyer on weekends',status:'active'},
   {id:'cu4',name:'Neha Desai',email:'neha@email.com',phone:'9765432180',addr:'Plot 7 Wakad, Pune',lat:18.5989,lng:73.7746,orders:2,totalSpent:340,joinDate:'2024-11-30',notes:'',status:'active'},
   {id:'cu5',name:'Vikram Singh',email:'vikram@email.com',phone:'9654321098',addr:'Hinjewadi Phase 2, Pune',lat:18.5965,lng:73.7229,orders:1,totalSpent:0,joinDate:'2025-02-14',notes:'Order cancelled - refund pending',status:'inactive'},
@@ -1064,7 +1064,7 @@ let marqueeMessages = [
   {text:'Carbon neutral delivery · We plant a tree per order',badge:'Green',active:true},
 ];
 
-const storeLocation = {lat:21.06719,lng:79.06048,name:'Fresh Market Store'};
+const storeLocation = {lat:18.5500,lng:73.8200,name:'Fresh Market Store'};
 let orderFilter = 'all';
 let refundFilter = 'all';
 let bulkPriceChanges = {};
@@ -2679,7 +2679,7 @@ function exportCSV() {
 document.getElementById('pending-badge').textContent = orders.filter(o=>o.status==='pending').length;
 document.getElementById('refund-badge').textContent = refunds.filter(r=>r.status==='pending').length;
 setInterval(()=>{ const t=document.getElementById('sync-time'); if(t) t.textContent='just now'; }, 30000);
-renderDashboard();
+//renderDashboard();
 
 /* ================================================
    MOBILE SIDEBAR TOGGLE
@@ -2752,5 +2752,8 @@ function setMobActive(el) {
 }
 
 </script>
+<script src="api-client.js"></script>
+<script src="backoffice-api.js"></script>
+<script src="mobile-back-handler.js"></script>
 </body>
 </html>
